@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import DateField, IntegerField, StringField, PasswordField, SubmitField, BooleanField, TextAreaField, TimeField
+from wtforms import DateField, IntegerField, SelectField, StringField, PasswordField, SubmitField, BooleanField, TextAreaField, TimeField
 from wtforms.validators import DataRequired, Email, EqualTo
 
 class RegistrationForm(FlaskForm):
@@ -17,17 +17,16 @@ class LoginForm(FlaskForm):
 
 class DoctorForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     specialization = StringField('Specialization', validators=[DataRequired()])
     availability = DateField('Availability')
     submit = SubmitField('Add Doctor')
 
 class AppointmentForm(FlaskForm):
-    patient_id = StringField('Patient ID', validators=[DataRequired()])
-    doctor_id = StringField('Doctor ID', validators=[DataRequired()])
     appointment_date = DateField('Appointment Date', validators=[DataRequired()])
-    appointment_time = TimeField('Appointment Time', validators=[DataRequired()])
-    prescription = TextAreaField('Prescription')
-    status = BooleanField('Status')
+    slot = StringField('Slot', validators=[DataRequired()])
     submit = SubmitField('Book Appointment')
 
 class TimeSlotForm(FlaskForm):

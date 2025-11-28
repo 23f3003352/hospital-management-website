@@ -4,3 +4,71 @@
  <!-- Doctor - availability adding feature -->
   <!-- patient - appointment booking feature -->
     <!-- admin - see all the doctor's Appointment -->
+
+{% extends 'layout.html' %}
+{% block content %}
+<h1>Doctor Profile Page</h1>
+<a class="btn btn-danger" href="{{ url_for('logout') }}">Logout</a>
+
+<!-- remove all if needed cuz not wriiten manually -->
+<h3 class="mb-4">Schedule Meeting</h3>
+
+<form method="POST" id="bookingForm">
+    {{ form.hidden_tag() }}
+
+    <input type="hidden" id="selected_date" name="appointment_date">
+    <input type="hidden" id="selected_slot" name="slot">
+
+    {% for day in days %}
+        <div class="mb-3">
+            <h5 class="mb-0">{{ day.strftime('%d %b %Y') }}</h5>
+
+            <div class="d-flex gap-2p flex-wrap" style="justify-content: flex-start; margin-left: 20px; gap: 40px;">
+                {% for slot_key, slot_label in slot_map.items() %}
+                
+                {% set free = availability[day][slot_key] %}
+
+                <button 
+                    type="button"
+                    class="slot-btn btn 
+                        {% if free %}btn-light{% else %}btn-secondary{% endif %}"
+                    data-date="{{ day }}"
+                    data-slot="{{ slot_key }}"
+                    {% if not free %}disabled{% endif %}
+                >
+                    {{ slot_label }}
+                </button>
+
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+        
+    <button 
+        id="bookButton" 
+        class="btn mybutton mt-3" 
+        type="submit"
+        style="display:none;">
+        Book Appointment
+    </button>
+</form>
+
+
+<script>
+document.querySelectorAll(".slot-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+        // Remove highlight from other slots
+        document.querySelectorAll(".slot-btn").forEach(b => b.classList.remove("btn-info"));
+        this.classList.add("btn-info");
+
+        // Set hidden values
+        document.getElementById("selected_date").value = this.dataset.date;
+        document.getElementById("selected_slot").value = this.dataset.slot;
+
+        // Show book button
+        document.getElementById("bookButton").style.display = "block";
+    });
+});
+</script>
+
+{% endblock %}

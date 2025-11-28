@@ -1,0 +1,165 @@
+.thead-darky {
+    background-color: #00B0A0;
+    color: black;
+    font-weight: 400;
+    border-style: none;
+    font-family: 'Arial', sans-serif;
+}
+
+table{
+    text-align: center;
+}
+
+.thead-darky th {
+    font-weight: 400;
+    font-size: 16px;
+}
+
+.mybutton{
+    background-color: #00B0A0 !important;
+    border-radius: 8px !important;
+    border-color: transparent !important;
+    color: black !important;
+}
+
+.mybutton:hover{
+    background-color: #006057 !important;
+    transform: scale(1.06) !important;
+    border-color: transparent !important;
+    color: white !important;
+}
+
+form .btn-primary{
+    background-color: #00B0A0;
+    border-radius: 8px;
+    border-color: transparent;
+    width: 50%;
+    color: black;
+}
+
+form .btn-primary:hover{
+    background-color: #006057;
+    transform: scale(1.06);
+    border-color: transparent;
+    color: black;
+    transition: background-color 0.7s, transform 0.7s, ease-in-out;
+}
+
+.d-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.flex{
+    display: flex;
+}
+
+.flex-column{
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-row{
+    display: flex;
+    flex-direction: row;
+}
+
+.gap-4p{
+    gap: 4px !important;
+}
+
+.gap-8p{
+    gap: 8px !important;
+}
+
+.gap-12p{
+    gap: 12px !important;
+}
+
+.gap-16p{
+    gap: 16px !important;
+}
+
+.gap-20p{
+    gap: 20px !important;
+}
+
+.gap-36p{
+    gap: 36px !important;
+}
+
+.gap-16p{
+    gap: 16px !important;
+}
+
+h1, h2, h3, h4, h5, h6{
+    font-family: "inter", sans-serif;
+}
+
+h1{
+    font-size: 24px !important;
+    font-weight: 700;
+}
+
+
+
+.normal-a, .navbar a{
+    text-decoration: none;
+    color: black;
+}
+
+.navbar a:hover{
+    color: #006057;
+    scale: 1.05;
+    transition: color 0.7s, scale 0.7s, ease-in-out;
+}
+
+.navbar img{
+    width: 36px;
+    height: 36px;
+}
+
+h2{
+    font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
+form .form-control{
+    border-radius: 20px;
+    border: transparent;
+    padding-left: 20px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: #F7F7F7;
+}
+
+form input:focus, form select:focus, form textarea:focus{
+    background-color: #F7F7F7 !important;
+    background-image: none !important;
+}
+
+.table-row-link a {
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+
+.table-row-link:visited,
+.table-row-link:active,
+.table-row-link:focus {
+    text-decoration: none !important;
+    color: inherit !important;
+    outline: none;
+}
+
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #f9f9f9 inset !important; /* your background color */
+  box-shadow: 0 0 0 1000px #f9f9f9 inset !important;
+  -webkit-text-fill-color: #000 !important; /* keep your text readable */
+  caret-color: #000; /* makes the cursor visible */
+}
+

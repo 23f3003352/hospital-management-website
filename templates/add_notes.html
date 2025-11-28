@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<h2>Prescription for Appointment {{ appt.id }}</h2>
+
+<form method="POST">
+    
+    {% if view_only %}
+        <textarea class="form-control" rows="6" readonly>{{ appt.prescription }}</textarea>
+    {% else %}
+        <textarea name="prescription" class="form-control" rows="6">{{ appt.prescription }}</textarea>
+        <br>
+        <button class="btn btn-success" type="submit">Save Notes</button>
+    {% endif %}
+
+</form>
+
+{% endblock %}

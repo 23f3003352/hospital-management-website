@@ -1,1 +1,19 @@
 <!-- Profile page of Patient -->
+
+{% extends 'layout.html' %}
+{% block content %}
+<h1>Patient Profile Page</h1>
+<div class="flex-column mx-auto gap-16p mt-5" style = "align-items: center; display: flex">
+<!-- content -->
+<div class="flex-row row gap-36p">
+    <div class="profile-container d-flex flex-column align-items-center">
+    <img src="{{ url_for('static', filename='images/patient_avatar.webp') }}" alt="Patient Avatar" class="avatar-img mb-3" style="width: 120px;">
+    </div>
+    <div class="profile-details">
+        <p><strong>Name:</strong> {{ pat.name }}</p>
+        <p><strong>Age:</strong> {{ pat.age }}</p>
+    </div>
+</div>
+</div>
+<a class="btn btn-danger" href="{{ url_for('logout') }}">Logout</a>
+{% endblock %}

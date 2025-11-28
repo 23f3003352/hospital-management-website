@@ -1,10 +1,9 @@
-{% extends 'layout.html' %}
+<!-- for registering new doctors -->
 
-{% block title %}Register - Hospital Management System{% endblock %}
-
+{% extends "layout.html" %}
 {% block content %}
 <div class="flex-column mx-auto gap-16p" style="width: 40%; padding: 40px; border: 1px solid #ccc; border-radius: 40px;">
-    <h2 style="text-align: center;">Create a new account</h2>
+    <h2 style="text-align: center;">Doctor Registration</h2>
     <form method="POST" class="form flex-column gap-20p">
         {{ form.hidden_tag() }}
         <div class="flex-column gap-8p">
@@ -18,7 +17,7 @@
             {{ form.name(class="form-control", placeholder="Name") }}
         </div>
         <div>
-            {{ form.age(class="form-control", placeholder="Age") }}
+            {{ form.specialization(class="form-control", placeholder="Specialization") }}
         </div>
         <div>
             {% if form.password.errors %}
@@ -34,8 +33,7 @@
         </div>
         </div>
         <div class="flex-column gap-16p" style="justify-content: center; align-items: center;">
-            <button type="submit" class="btn btn-primary">Register</button>
-            <a href="{{ url_for('login') }}" style="text-align: center; display: block; color: #006057; text-decoration: none;">Already have an account?</a>
+            <button type="submit" class="btn btn-primary">Add Doctor</button>
         </div>
     </form>
 </div>
