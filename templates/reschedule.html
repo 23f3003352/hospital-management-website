@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Reschedule Appointment #{{ appt.id }}</h2>
+
+<p><strong>Doctor:</strong> {{ appt.doctor.name }}</p>
+<p><strong>Current Date:</strong> {{ appt.appointment_date }}</p>
+<p><strong>Current Slot:</strong> {{ appt.slot }}</p>
+
+<hr>
+
+<h3>Select a new date</h3>
+<form method="GET">
+    <input type="hidden" name="appt_id" value="{{ appt.id }}">
+    <select name="date" class="form-control" onchange="this.form.submit()">
+        <option disabled selected>Select a date</option>
+        {% for d in days %}
+            <option value="{{ d }}">{{ d }}</option>
+        {% endfor %}
+    </select>
+</form>
+
+{% if selected_date %}
+    <hr>
+    <h3>Available Slots for {{ selected_date }}</h3>
+
+    {% if slots %}
+    <form method="POST">
+        <input type="hidden" name="new_date" value="{{ selected_date }}">
+
+        {% for s in slots %}
+            <label>
+                <input type="radio" name="new_slot" value="{{ s }}" required>
+                {{ s }}
+            </label><br>
+        {% endfor %}
+
+        <br>
+        <button type="submit" class="btn btn-success">Confirm Reschedule</button>
+    </form>
+    {% else %}
+        <p>No available slots for this date.</p>
+    {% endif %}
+{% endif %}
+
+{% endblock %}

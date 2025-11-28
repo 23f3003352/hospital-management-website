@@ -25,7 +25,11 @@
             <td>{{ a.doctor.name }}</td>
             <td>{{ a.appointment_date }}</td>
             <td>{{ a.slot }}</td>
-            <td>{{ a.status }}</td>
+            <td>{% if a.status %}
+        <div class="text-success fw-bold">Complete</div>
+    {% else %}
+        <divclass="text-warning fw-bold">Pending</div>
+    {% endif %}</td>
             <td>
               <a href="{{ url_for('view_notes', appt_id=a.id) }}" class="btn btn-info btn-sm">
                   View
@@ -54,6 +58,13 @@
                             {% if a.status %}Undo{% else %}Done{% endif %}
                         </button>
                     </form>
+                {% endif %}
+
+                {% if current_user.id == a.patient_id and not a.status %}
+                    <a href="{{ url_for('reschedule', appt_id=a.id) }}" 
+                      class="btn btn-sm btn-primary">
+                      Reschedule
+                    </a>
                 {% endif %}
             </td>
         </tr>

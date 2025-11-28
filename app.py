@@ -71,23 +71,31 @@ def default():
 
 @app.route('/home')
 def home():
-    # First: make sure user is logged in
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
-    # Now user is authenticated → safe to access is_admin / is_doctor
     if current_user.is_admin:
-        today = date.today()
-        appts = appointment.query.filter(appointment.appointment_date >= today).all()
+        appts = appointment.query.order_by(
+            appointment.appointment_date.asc()
+        ).all()
         return render_template('home_da.html', appointments=appts)
 
     elif current_user.is_doctor:
-        appts = appointment.query.filter_by(doctor_id=current_user.id).all()
+        appts = appointment.query.filter_by(
+            doctor_id=current_user.id
+        ).order_by(
+            appointment.appointment_date.asc()
+        ).all()
         return render_template('home_d.html', appointments=appts)
 
     else:
-        appointments = appointment.query.filter_by(patient_id=current_user.id).all()
-        return render_template('home_p.html', appointments=appointments)
+        appts = appointment.query.filter_by(
+            patient_id=current_user.id
+        ).order_by(
+            appointment.appointment_date.asc()
+        ).all()
+        return render_template('home_p.html', appointments=appts)
+
             
 @app.route('/doctor_list', methods=['GET', 'POST'])
 def Doctor():
@@ -101,13 +109,17 @@ def Patient():
 @app.route('/appointment', methods=['GET', 'POST'])
 def Appointment():
     if current_user.is_admin:
-            # today = date.today()
-            # appts = appointment.query.filter(appointment.appointment_date >= today).all()
-            appts = appointment.query.all()
+            appts = appointment.query.order_by(
+            appointment.appointment_date.asc()
+        ).all()
     elif current_user.is_doctor:
-        appts = appointment.query.filter_by(doctor_id=current_user.id).all()
+        appts = appointment.query.filter_by(doctor_id=current_user.id).order_by(
+            appointment.appointment_date.asc()
+        ).all()
     else:
-        appts = appointment.query.filter_by(patient_id=current_user.id).all()
+        appts = appointment.query.filter_by(patient_id=current_user.id).order_by(
+            appointment.appointment_date.asc()
+        ).all()
     return render_template('appointment_history.html', appointments=appts)
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -325,6 +337,83 @@ def cancel_appointment(appt_id):
     db.session.commit()
     flash("Appointment cancelled.", "success")
     return redirect(url_for('Appointment'))
+
+@app.route('/reschedule/<int:appt_id>', methods=['GET', 'POST'])
+@login_required
+def reschedule(appt_id):
+    a = appointment.query.get_or_404(appt_id)
+
+    # Only the patient who booked OR admin can reschedule
+    if current_user.id != a.patient_id and not current_user.is_admin:
+        flash("You are not allowed to reschedule this appointment.", "danger")
+        return redirect(url_for('Appointment'))
+
+    doctor_id = a.doctor_id
+    today = date.today()
+    days = [today + timedelta(days=i) for i in range(7)]
+    days.sort()
+
+    slot_map = [
+        "9 AM - 12 PM",
+        "12 PM - 3 PM",
+        "3 PM - 6 PM"
+    ]
+
+    selected_date = request.args.get("date")
+    available_slots = []
+
+    # Step 1 → user selected a date → show available slots
+    if selected_date:
+        selected_date_obj = datetime.strptime(selected_date, "%Y-%m-%d").date()
+
+        for slot in slot_map:
+            booked = appointment.query.filter_by(
+                doctor_id=doctor_id,
+                appointment_date=selected_date_obj,
+                slot=slot
+            ).first()
+
+            # Slot is free if:
+            # - No booking found
+            # - Or the booking is THIS SAME APPOINTMENT (editing case)
+            if booked is None or booked.id == appt_id:
+                available_slots.append(slot)
+
+    # Step 2 → final confirmation POST
+    if request.method == "POST":
+        new_date = request.form.get("new_date")
+        new_slot = request.form.get("new_slot")
+
+        new_date_obj = datetime.strptime(new_date, "%Y-%m-%d").date()
+
+        # Backend safety — prevent overlap
+        conflict = appointment.query.filter(
+            appointment.doctor_id == doctor_id,
+            appointment.appointment_date == new_date_obj,
+            appointment.slot == new_slot,
+            appointment.id != appt_id
+        ).first()
+
+        if conflict:
+            flash("That slot is already booked!", "danger")
+            return redirect(url_for('reschedule', appt_id=appt_id))
+
+        # Apply the update
+        a.appointment_date = new_date_obj
+        a.slot = new_slot
+        db.session.commit()
+
+        flash("Appointment rescheduled!", "success")
+        return redirect(url_for('Appointment'))
+
+    # Render page
+    return render_template(
+        "reschedule.html",
+        appt=a,
+        days=days,
+        selected_date=selected_date,
+        slots=available_slots
+    )
 
 
 
