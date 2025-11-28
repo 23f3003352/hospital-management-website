@@ -22,7 +22,7 @@
     <!-- Appointment rows will go here -->
         {% for a in appointments %}
         <tr>
-            <th scope="row">{{ a.id }}</th>
+            <th scope="row"></th>
             <td>{{ a.patient.name }}</td>
             <td>{{ a.doctor.name }}</td>
             <td>{{ a.appointment_date }}</td>
@@ -53,7 +53,7 @@
                     </form>
                 {% endif %}
 
-                {% if current_user.id == a.patient_id and not a.status %}
+                {% if (current_user.id == a.patient_id and not a.status) and (not current_user.is_doctor and not current_user.is_admin) %}
                     <a href="{{ url_for('reschedule', appt_id=a.id) }}" 
                       class="btn btn-sm btn-primary">
                       Reschedule

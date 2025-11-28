@@ -89,6 +89,14 @@ form .btn-primary:hover{
     gap: 36px !important;
 }
 
+.gap-100p{
+    gap: 100px !important;
+}
+
+.gap-120p{
+    gap: 120px !important;
+}
+
 .gap-16p{
     gap: 16px !important;
 }
@@ -137,6 +145,26 @@ form input:focus, form select:focus, form textarea:focus{
     background-color: #F7F7F7 !important;
     background-image: none !important;
 }
+
+.profile-container{
+    width: 50%;
+    flex-wrap: nowrap
+}
+
+.profile-field {
+    background-color: #F7F7F7;
+    border-radius: 20px;
+    padding: 12px 20px;
+    width: 260px;
+    font-size: 15px;
+    font-family: "inter", sans-serif;
+}
+.profile-label {
+    font-weight: 400;
+    margin-bottom: 4px;
+    font-family: "inter", sans-serif;
+}
+
 
 .table-row-link a {
     text-decoration: none !important;

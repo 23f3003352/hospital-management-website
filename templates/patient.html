@@ -1,1 +1,38 @@
 <!-- list of all patient and their data -->
+
+{% extends 'layout.html' %}
+{% block content %}
+<h1 style="margin-bottom: 20px;">Patient List</h1>
+<div class="flex-column mx-auto gap-16p" style = "align-items: center; display: flex">
+<div style=" border: 1px solid #ccc; border-radius: 24px; width: 100%; overflow: clip;">
+<table class="table" style="text-align: center; padding: 20px; border: 1px solid #ccc; margin-bottom: 0px;">
+  <thead class="thead-darky">
+    <tr>
+        <th scope="col"></th>
+        <th scope="col">Patient Name</th>
+        <th scope="col">Age</th>
+        <th scope="col">Appointment</th>
+    </tr>
+  </thead>
+  <tbody>
+      {% for p in patient %}
+      <tr class="table-row-link">
+          <td><a href="{{ url_for('patient_profile', patient_id=p.id) }}"></a></td>
+          <td><a href="{{ url_for('patient_profile', patient_id=p.id) }}">{{ p.name }}</a></td>
+          <td><a href="{{ url_for('patient_profile', patient_id=p.id) }}">{{ p.age }}</a></td>
+          <td>
+              <a href="{{ url_for('patient_profile', patient_id=p.id) }}">
+                  <button type="button" class="btn-light btn">View Appointments</button>
+              </a>
+      </tr>
+      {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<!-- Create a new doctor -->
+{% if current_user.is_authenticated and current_user.is_admin %}
+<a href="{{ url_for('addDoctor') }}"><button type="button" class="mybutton btn">Add Doctor</button></a>
+{% endif %}
+</div>
+{% endblock %}

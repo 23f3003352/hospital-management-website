@@ -11,14 +11,23 @@
         <th scope="col"></th>
         <th scope="col">Doctor</th>
         <th scope="col">Specialization</th>
+        <th scope="col"> Book Appointment</th>
     </tr>
   </thead>
   <tbody>
       {% for d in doctors %}
       <tr class="table-row-link">
-          <td><a href="{{ url_for('doctor_profile', doctor_id=d.id) }}">{{ d.id }}</a></td>
+          <td><a href="{{ url_for('doctor_profile', doctor_id=d.id) }}"></a></td>
           <td><a href="{{ url_for('doctor_profile', doctor_id=d.id) }}">{{ d.name }}</a></td>
           <td><a href="{{ url_for('doctor_profile', doctor_id=d.id) }}">{{ d.specialization }}</a></td>
+          <td>
+              {% if not current_user.is_doctor and not current_user.is_admin %}
+              <a href="{{ url_for('doctor_profile', doctor_id=d.id) }}">
+                  <button type="button" class="btn-light btn">Book Now</button>
+              </a>
+              {% else %}
+              N/A
+              {% endif %}
       </tr>
 
       {% endfor %}

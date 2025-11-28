@@ -1,5 +1,75 @@
+<!-- home page for Doctor and Admin View -->
 {% extends 'layout.html' %}
-
 {% block content %}
-Home Page for Doctors
+<h1 style="margin-bottom: 20px;">Admin Dashboard</h1>
+<div style=" border: 1px solid #ccc; border-radius: 24px; width: 100%; overflow: clip;">
+<table class="table" style="text-align: center; padding: 20px; border: 1px solid #ccc; margin-bottom: 0px;">
+  <thead class="thead-darky">
+    <tr>
+        <th scope="col"></th>
+        <th scope="col">Patient</th>
+        <th scope="col">Doctor</th>
+        <th scope="col">Date</th>
+        <th scope="col">Slot</th>
+        <th scope="col">Status</th>
+        <th scope="col">Notes</th>
+        <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Appointment rows will go here -->
+        {% for a in appointments %}
+        <tr>
+            <th scope="row"></th>
+            <td>{{ a.patient.name }}</td>
+            <td>{{ a.doctor.name }}</td>
+            <td>{{ a.appointment_date }}</td>
+            <td>{{ a.slot }}</td>
+            <td>{% if a.status %}
+        <div class="text-success fw-bold">Complete</div>
+    {% else %}
+        <divclass="text-warning fw-bold">Pending</div>
+    {% endif %}</td>
+            <td>
+              <a href="{{ url_for('view_notes', appt_id=a.id) }}" class="btn btn-info btn-sm">
+                  View
+              </a>
+            </td>
+            <td>
+                <!-- Doctor: Add / Edit Notes -->
+                {% if (current_user.is_doctor and a.doctor_id == current_user.id) or current_user.is_admin %}
+                    <a href="{{ url_for('add_notes', appt_id=a.id) }}" class="btn btn-warning btn-sm">
+                        Add Notes
+                    </a>
+                {% endif %}
+
+
+                <!-- Patient: Cancel appointment -->
+                {% if (current_user.id == a.patient_id and not a.status) and (not current_user.is_doctor and not current_user.is_admin) %}
+                    <form action="{{ url_for('cancel_appointment', appt_id=a.id) }}" method="POST" style="display:inline;">
+                        <button class="btn btn-sm btn-danger">Cancel</button>
+                    </form>
+                {% endif %}
+
+                <!-- Doctor: Mark as done -->
+                {% if (current_user.is_doctor and a.doctor_id == current_user.id) or current_user.is_admin %}
+                    <form action="{{ url_for('mark_done', appt_id=a.id) }}" method="POST" style="display:inline;">
+                        <button class="btn btn-sm btn-success">
+                            {% if a.status %}Undo{% else %}Done{% endif %}
+                        </button>
+                    </form>
+                {% endif %}
+
+                {% if (current_user.id == a.patient_id and not a.status) and (not current_user.is_doctor and not current_user.is_admin) %}
+                    <a href="{{ url_for('reschedule', appt_id=a.id) }}" 
+                      class="btn btn-sm btn-primary">
+                      Reschedule
+                    </a>
+                {% endif %}
+            </td>
+        </tr>
+      {% endfor %}
+  </tbody>
+</table>
+</div>
 {% endblock %}

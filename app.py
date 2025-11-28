@@ -104,7 +104,8 @@ def Doctor():
 
 @app.route('/patient', methods=['GET', 'POST'])
 def Patient():
-    return render_template('patient.html')
+    pat = patient.query.all()
+    return render_template('patient.html', patient=pat)
 
 @app.route('/appointment', methods=['GET', 'POST'])
 def Appointment():
@@ -262,7 +263,19 @@ def doctor_profile(doctor_id):
 @login_required
 def patient_profile(patient_id):
     pat = patient.query.get_or_404(patient_id)
-    return render_template('profile_page_p.html', pat=pat)
+
+    appointments = appointment.query.filter_by(
+        patient_id=patient_id
+    ).order_by(
+        appointment.appointment_date.asc()
+    ).all()
+
+    return render_template(
+        'profile_page_p.html',
+        pat=pat,
+        appointments=appointments
+    )
+
 
 @app.route('/profile')
 @login_required

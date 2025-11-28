@@ -3,17 +3,110 @@
 {% extends 'layout.html' %}
 {% block content %}
 <h1>Patient Profile Page</h1>
+<div class="flex-column gap-16p" style="align-items: center;">
 <div class="flex-column mx-auto gap-16p mt-5" style = "align-items: center; display: flex">
 <!-- content -->
-<div class="flex-row row gap-36p">
-    <div class="profile-container d-flex flex-column align-items-center">
-    <img src="{{ url_for('static', filename='images/patient_avatar.webp') }}" alt="Patient Avatar" class="avatar-img mb-3" style="width: 120px;">
+<!-- <div class="flex-row row gap-100p" style="flex-wrap: nowrap; align-items: center;"> -->
+<div class="flex-row gap-120p">
+    <div class="profile-container d-flex flex-column align-items-center" style="width: 50%; border-radius: 100px; overflow: clip; align-items: center">
+    <img src="{{ url_for('static', filename='images/patient_avatar.webp') }}" alt="Patient Avatar" class="avatar-img mb-3" style="width: 120px; border-radius: 300px; ">
     </div>
-    <div class="profile-details">
-        <p><strong>Name:</strong> {{ pat.name }}</p>
-        <p><strong>Age:</strong> {{ pat.age }}</p>
+    <div class="profile-details flex-column gap-16p">
+
+        <div class="flex-row gap-12p" style="align-items: center; justify-content: flex-end">
+            <div class="profile-label">Username</div>
+            <div class="profile-field">{{ pat.username }}</div>
+        </div>
+
+        <div class="flex-row gap-12p" style="align-items: center; justify-content: flex-end">
+            <div class="profile-label">Name</div>
+            <div class="profile-field">{{ pat.name }}</div>
+        </div>
+
+        <div class="flex-row gap-12p" style="align-items: center; justify-content: flex-end">
+            <div class="profile-label">Age</div>
+            <div class="profile-field">{{ pat.age }}</div>
+        </div>
     </div>
 </div>
 </div>
 <a class="btn btn-danger" href="{{ url_for('logout') }}">Logout</a>
+</div>
+
+<!-- Appointment history here -->
+ <h5 style="margin-bottom: -28px; margin-top: 20px; margin-left: 5px;">Appointment History</h5>
+<div class="flex-column mx-auto gap-16p mt-5" style = "align-items: center; display: flex">
+<div style=" border: 1px solid #ccc; border-radius: 24px; width: 100%; overflow: clip;">
+<table class="table" style="text-align: center; padding: 20px; border: 1px solid #ccc; margin-bottom: 0px;">
+  <thead class="thead-darky">
+    <tr>
+        <th scope="col"></th>
+        <th scope="col">Patient</th>
+        <th scope="col">Doctor</th>
+        <th scope="col">Date</th>
+        <th scope="col">Slot</th>
+        <th scope="col">Status</th>
+        <th scope="col">Notes</th>
+        <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Appointment rows will go here -->
+        {% for a in appointments %}
+        <tr>
+            <th scope="row"></th>
+            <td>{{ a.patient.name }}</td>
+            <td>{{ a.doctor.name }}</td>
+            <td>{{ a.appointment_date }}</td>
+            <td>{{ a.slot }}</td>
+            <td>{% if a.status %}
+        <div class="text-success fw-bold">Complete</div>
+    {% else %}
+        <divclass="text-warning fw-bold">Pending</div>
+    {% endif %}</td>
+            <td>
+              <a href="{{ url_for('view_notes', appt_id=a.id) }}" class="btn btn-info btn-sm">
+                  View
+              </a>
+            </td>
+            <td>
+                <!-- Doctor: Add / Edit Notes -->
+                {% if (current_user.is_doctor and a.doctor_id == current_user.id) or current_user.is_admin %}
+                    <a href="{{ url_for('add_notes', appt_id=a.id) }}" class="btn btn-warning btn-sm">
+                        Add Notes
+                    </a>
+                {% endif %}
+
+
+                <!-- Patient: Cancel appointment -->
+                {% if (current_user.id == a.patient_id and not a.status) and (not current_user.is_doctor and not current_user.is_admin) %}
+                    <form action="{{ url_for('cancel_appointment', appt_id=a.id) }}" method="POST" style="display:inline;">
+                        <button class="btn btn-sm btn-danger">Cancel</button>
+                    </form>
+                {% endif %}
+
+                {% if (current_user.id == a.patient_id and not a.status) and (not current_user.is_doctor and not current_user.is_admin) %}
+                    <a href="{{ url_for('reschedule', appt_id=a.id) }}" 
+                      class="btn btn-sm btn-primary">
+                      Reschedule
+                    </a>
+                {% endif %}
+
+
+                <!-- Doctor: Mark as done -->
+                {% if (current_user.is_doctor and a.doctor_id == current_user.id) or current_user.is_admin %}
+                    <form action="{{ url_for('mark_done', appt_id=a.id) }}" method="POST" style="display:inline;">
+                        <button class="btn btn-sm btn-success">
+                            {% if a.status %}Undo{% else %}Done{% endif %}
+                        </button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+
 {% endblock %}
