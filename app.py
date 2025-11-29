@@ -74,23 +74,42 @@ def home():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
+    today = date.today()
+    next_week = today + timedelta(days=7)
+
+    # Common filter for all
+    base_filter = (
+        appointment.appointment_date >= today,
+        appointment.appointment_date <= next_week
+    )
+
     if current_user.is_admin:
-        appts = appointment.query.order_by(
+        appts = appointment.query.filter(
+            *base_filter,
+            appointment.is_blocked == False,
+            appointment.patient_id != 0
+        ).order_by(
             appointment.appointment_date.asc()
         ).all()
         return render_template('home_da.html', appointments=appts)
 
     elif current_user.is_doctor:
-        appts = appointment.query.filter_by(
-            doctor_id=current_user.id
+        appts = appointment.query.filter(
+            appointment.doctor_id == current_user.id,
+            *base_filter,
+            appointment.is_blocked == False,
+            appointment.patient_id != 0
         ).order_by(
             appointment.appointment_date.asc()
         ).all()
         return render_template('home_d.html', appointments=appts)
 
     else:
-        appts = appointment.query.filter_by(
-            patient_id=current_user.id
+        appts = appointment.query.filter(
+            appointment.patient_id == current_user.id,
+            *base_filter,
+            appointment.is_blocked == False,
+            appointment.patient_id != 0
         ).order_by(
             appointment.appointment_date.asc()
         ).all()
@@ -99,26 +118,54 @@ def home():
             
 @app.route('/doctor_list', methods=['GET', 'POST'])
 def Doctor():
-        doctors = doctor.query.all()
-        return render_template('doctor.html', doctors=doctors)
+        q = request.args.get("q", "")  # get search text, default empty
+
+        if q:
+            doctors = doctor.query.filter(
+                (doctor.name.ilike(f"%{q}%")) |
+                (doctor.specialization.ilike(f"%{q}%"))
+            ).all()
+        else:
+            doctors = doctor.query.all()
+
+        return render_template('doctor.html', doctors=doctors, q=q)
 
 @app.route('/patient', methods=['GET', 'POST'])
 def Patient():
-    pat = patient.query.all()
+
+    q = request.args.get("q", "")  # get search text, default empty
+    if q:
+        pat = patient.query.filter(
+            (patient.name.ilike(f"%{q}%")) |
+            (patient.username.ilike(f"%{q}%"))
+        ).all()
+    else:
+        pat = patient.query.all()
     return render_template('patient.html', patient=pat)
 
 @app.route('/appointment', methods=['GET', 'POST'])
 def Appointment():
     if current_user.is_admin:
-            appts = appointment.query.order_by(
+            appts = appointment.query.filter(
+            appointment.is_blocked == False,
+            appointment.patient_id != 0
+        ).order_by(
             appointment.appointment_date.asc()
         ).all()
     elif current_user.is_doctor:
-        appts = appointment.query.filter_by(doctor_id=current_user.id).order_by(
+        appts = appointment.query.filter(
+            appointment.doctor_id == current_user.id,
+            appointment.is_blocked == False,
+            appointment.patient_id != 0
+        ).order_by(
             appointment.appointment_date.asc()
         ).all()
     else:
-        appts = appointment.query.filter_by(patient_id=current_user.id).order_by(
+        appts = appointment.query.filter(
+            appointment.patient_id == current_user.id,
+            appointment.is_blocked == False,
+            appointment.patient_id != 0
+        ).order_by(
             appointment.appointment_date.asc()
         ).all()
     return render_template('appointment_history.html', appointments=appts)
@@ -208,6 +255,31 @@ def addDoctor():
         return redirect(url_for('Doctor'))
     return render_template('register_d.html', form=form)
 
+@app.route('/delete_doctor/<int:doctor_id>', methods=['POST'])
+@login_required
+def delete_doctor(doctor_id):
+    # Only admin allowed
+    if not current_user.is_admin:
+        flash("You do not have permission to delete doctors.", "danger")
+        return redirect(url_for('home'))
+
+    doc = doctor.query.get_or_404(doctor_id)
+
+    # Delete all appointments first (or else FK constraint issues)
+    for a in doc.appointments:
+        db.session.delete(a)
+
+    # Delete timeslots linked to doctor
+    for t in doc.timeSlots:
+        db.session.delete(t)
+
+    # Finally delete doctor
+    db.session.delete(doc)
+    db.session.commit()
+
+    flash("Doctor deleted successfully.", "success")
+    return redirect(url_for('Doctor'))
+
 @app.route('/doctor/<int:doctor_id>', methods=['GET', 'POST'])
 @login_required
 def doctor_profile(doctor_id):
@@ -230,26 +302,47 @@ def doctor_profile(doctor_id):
     for day in days:
         availability[day] = {}
         for slot_key in slot_map.keys():
-            booked = appointment.query.filter_by(
-                doctor_id=doctor_id,
-                appointment_date=day,
-                slot=slot_key
+            booked = appointment.query.filter(
+                appointment.doctor_id == doctor_id,
+                appointment.appointment_date == day,
+                appointment.slot == slot_key,
+                appointment.is_blocked == False,
+                appointment.patient_id != 0
             ).first()
             availability[day][slot_key] = (booked is None)
 
-    # Handle booking submission
     if form.validate_on_submit():
+
+        selected_date = form.appointment_date.data
+        selected_slot = form.slot.data
+
+        # DOCTOR clicks → block the slot
+        if current_user.is_doctor and current_user.id == doctor_id:
+            new_block = appointment(
+                patient_id=0,  # admin-id, used for blocks
+                doctor_id=doctor_id,
+                appointment_date=selected_date,
+                slot=selected_slot,
+                is_blocked=True
+            )
+            db.session.add(new_block)
+            db.session.commit()
+            flash("Slot blocked!", "success")
+            return redirect(url_for('doctor_profile', doctor_id=doctor_id))
+
+        # PATIENT clicks → book appointment
         new_appt = appointment(
             patient_id=current_user.id,
             doctor_id=doctor_id,
-            appointment_date=form.appointment_date.data,
-            slot=form.slot.data
+            appointment_date=selected_date,
+            slot=selected_slot,
+            is_blocked=False
         )
         db.session.add(new_appt)
         db.session.commit()
         flash("Appointment booked successfully!", "success")
         return redirect(url_for('doctor_profile', doctor_id=doctor_id))
-
+    
     return render_template(
         'profile_page_d.html',
         doc=doc,
@@ -264,8 +357,10 @@ def doctor_profile(doctor_id):
 def patient_profile(patient_id):
     pat = patient.query.get_or_404(patient_id)
 
-    appointments = appointment.query.filter_by(
-        patient_id=patient_id
+    appointments = appointment.query.filter(
+        appointment.patient_id == patient_id,
+        appointment.is_blocked == False,
+        appointment.patient_id != 0
     ).order_by(
         appointment.appointment_date.asc()
     ).all()
@@ -351,6 +446,23 @@ def cancel_appointment(appt_id):
     flash("Appointment cancelled.", "success")
     return redirect(url_for('Appointment'))
 
+@app.route('/unblock_slot/<int:appt_id>', methods=['POST'])
+@login_required
+def unblock_slot(appt_id):
+    a = appointment.query.get_or_404(appt_id)
+
+    # Only the doctor who owns this slot can unblock
+    if not (current_user.is_doctor and a.doctor_id == current_user.id and a.is_blocked):
+        flash("You cannot unblock this slot.", "danger")
+        return redirect(url_for('doctor_profile', doctor_id=current_user.id))
+
+    db.session.delete(a)
+    db.session.commit()
+    flash("Slot unblocked.", "success")
+
+    return redirect(url_for('doctor_profile', doctor_id=current_user.id))
+
+
 @app.route('/reschedule/<int:appt_id>', methods=['GET', 'POST'])
 @login_required
 def reschedule(appt_id):
@@ -380,10 +492,12 @@ def reschedule(appt_id):
         selected_date_obj = datetime.strptime(selected_date, "%Y-%m-%d").date()
 
         for slot in slot_map:
-            booked = appointment.query.filter_by(
-                doctor_id=doctor_id,
-                appointment_date=selected_date_obj,
-                slot=slot
+            booked = appointment.query.filter(
+                appointment.doctor_id == doctor_id,
+                appointment.appointment_date == selected_date_obj,
+                appointment.slot == slot,
+                appointment.is_blocked == False,
+                appointment.patient_id != 0
             ).first()
 
             # Slot is free if:
@@ -404,7 +518,9 @@ def reschedule(appt_id):
             appointment.doctor_id == doctor_id,
             appointment.appointment_date == new_date_obj,
             appointment.slot == new_slot,
-            appointment.id != appt_id
+            appointment.id != appt_id,
+            appointment.is_blocked == False,
+            appointment.patient_id != 0
         ).first()
 
         if conflict:

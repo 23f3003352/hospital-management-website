@@ -30,7 +30,9 @@
     </div>
 </div>
 </div>
+{% if current_user.id == pat.id and not current_user.is_doctor %}
 <a class="btn btn-danger" href="{{ url_for('logout') }}">Logout</a>
+{% endif %}
 </div>
 
 <!-- Appointment history here -->
@@ -53,16 +55,16 @@
   <tbody>
     <!-- Appointment rows will go here -->
         {% for a in appointments %}
-        <tr>
+        <tr class="table-row-link">
             <th scope="row"></th>
-            <td>{{ a.patient.name }}</td>
-            <td>{{ a.doctor.name }}</td>
+            <td><a href="{{ url_for('patient_profile', patient_id=a.patient.id) }}">{{ a.patient.name }}</a></td>
+            <td><a href="{{ url_for('doctor_profile', doctor_id=a.doctor.id) }}">{{ a.doctor.name }}</a></td>
             <td>{{ a.appointment_date }}</td>
             <td>{{ a.slot }}</td>
             <td>{% if a.status %}
         <div class="text-success fw-bold">Complete</div>
     {% else %}
-        <divclass="text-warning fw-bold">Pending</div>
+        <div>Pending</div>
     {% endif %}</td>
             <td>
               <a href="{{ url_for('view_notes', appt_id=a.id) }}" class="btn btn-info btn-sm">
@@ -87,7 +89,7 @@
 
                 {% if (current_user.id == a.patient_id and not a.status) and (not current_user.is_doctor and not current_user.is_admin) %}
                     <a href="{{ url_for('reschedule', appt_id=a.id) }}" 
-                      class="btn btn-sm btn-primary">
+                      class="btn btn-sm btn-primary" style="background-color: #ffc107;">
                       Reschedule
                     </a>
                 {% endif %}

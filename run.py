@@ -18,6 +18,7 @@ with app.app_context():
     print("All tables created.")
 
     admin = patient(
+        id=0,
         username="admin",
         name="Admin",
         age=30,
@@ -30,6 +31,7 @@ with app.app_context():
     print("Admin created!")
 
     admin = doctor(
+        id=0,
         username="admin",
         name="Admin",
         specialization="admin",

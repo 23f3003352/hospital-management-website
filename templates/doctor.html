@@ -3,6 +3,16 @@
 {% extends 'layout.html' %}
 {% block content %}
 <h1 style="margin-bottom: 20px;">Doctors List</h1>
+
+<!-- Search Bar -->
+<form method="GET" class="mb-3" style="display:flex; gap:12px; width: 300px;">
+    <input type="text" name="q" 
+           class="form-control" 
+           placeholder="Search doctors..." 
+           value="{{ q }}">
+    <button class="btn btn-primary">Search</button>
+</form>
+
 <div class="flex-column mx-auto gap-16p" style = "align-items: center; display: flex">
 <div style=" border: 1px solid #ccc; border-radius: 24px; width: 100%; overflow: clip;">
 <table class="table" style="text-align: center; padding: 20px; border: 1px solid #ccc; margin-bottom: 0px;">

@@ -39,6 +39,7 @@ class appointment(db.Model):
     slot = db.Column(db.String(20), nullable=False)
     prescription = db.Column(db.Text, nullable=True)
     status = db.Column(db.Boolean, default=False)
+    is_blocked = db.Column(db.Boolean, default=False)
 
     # this allows us to access related patient and doctor easily
     doctor = db.relationship('doctor', back_populates='appointments', lazy=True)
