@@ -316,10 +316,10 @@ def doctor_profile(doctor_id):
         selected_date = form.appointment_date.data
         selected_slot = form.slot.data
 
-        # DOCTOR clicks → block the slot
+        # If doctor → slot becomes unavailable
         if current_user.is_doctor and current_user.id == doctor_id:
             new_block = appointment(
-                patient_id=0,  # admin-id, used for blocks
+                patient_id=0,  # unused but required
                 doctor_id=doctor_id,
                 appointment_date=selected_date,
                 slot=selected_slot,
@@ -327,10 +327,10 @@ def doctor_profile(doctor_id):
             )
             db.session.add(new_block)
             db.session.commit()
-            flash("Slot blocked!", "success")
+            flash("Slot marked unavailable!", "success")
             return redirect(url_for('doctor_profile', doctor_id=doctor_id))
 
-        # PATIENT clicks → book appointment
+        # If patient → normal appointment
         new_appt = appointment(
             patient_id=current_user.id,
             doctor_id=doctor_id,
@@ -340,8 +340,9 @@ def doctor_profile(doctor_id):
         )
         db.session.add(new_appt)
         db.session.commit()
-        flash("Appointment booked successfully!", "success")
+        flash("Appointment booked!", "success")
         return redirect(url_for('doctor_profile', doctor_id=doctor_id))
+
     
     return render_template(
         'profile_page_d.html',
