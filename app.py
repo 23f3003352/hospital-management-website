@@ -306,8 +306,6 @@ def doctor_profile(doctor_id):
                 appointment.doctor_id == doctor_id,
                 appointment.appointment_date == day,
                 appointment.slot == slot_key,
-                appointment.is_blocked == False,
-                appointment.patient_id != 0
             ).first()
             availability[day][slot_key] = (booked is None)
 
