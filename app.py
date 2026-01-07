@@ -532,8 +532,7 @@ def reschedule(appt_id):
         db.session.commit()
 
         flash("Appointment rescheduled!", "success")
-        return redirect(url_for('Appointment'))
-
+        return redirect(url_for('home'))
     # Render page
     return render_template(
         "reschedule.html",

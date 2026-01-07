@@ -37,7 +37,7 @@
 </div>
 </div>
 <!-- log out -->
-{% if (current_user.id == doc.id) %}
+{% if (current_user.id == doc.id and current_user.is_doctor) %}
 <a class="btn btn-danger" href="{{ url_for('logout') }}">Logout</a>
 {% endif %}
 
