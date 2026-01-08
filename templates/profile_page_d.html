@@ -37,7 +37,7 @@
 </div>
 </div>
 <!-- log out -->
-{% if (current_user.id == doc.id and current_user.is_doctor) %}
+{% if (current_user.id == doc.id and (current_user.is_doctor or current_user.is_admin)) %}
 <a class="btn btn-danger" href="{{ url_for('logout') }}">Logout</a>
 {% endif %}
 
@@ -92,10 +92,14 @@
         class="btn mybutton mt-3" 
         type="submit"
         style="display:none;">
-        {% if not current_user.is_doctor %}
-        Book Appointment
+        {% if current_user.is_doctor or current_user.is_admin %}
+        {% if current_user.id != doc.id %}
+        N/A
         {% else %}
         Unavailable
+        {% endif %}
+        {% else %}
+        Book Appointment
         {% endif %}
     </button>
 </form>
