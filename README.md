@@ -1,110 +1,175 @@
-# hospital-management-website
-This is a website made using HTML, CSS, Python, Bootstrap, Flask and Jinja2. 
+# Hospital Management Website
 
-Hospital Management System (HMS)
-This project is a web application for a Hospital Management System (HMS) built for the Modern Application Development I course. It provides a centralized platform for Admins, Doctors, and Patients to manage hospital operations efficiently.
+A full-stack hospital management platform built to streamline patient-doctor interactions, appointment scheduling, and medical record management. The project focuses on creating a clean workflow for hospitals and clinics while demonstrating practical backend engineering, authentication systems, and responsive frontend design.
 
+---
 
-Problem Statement
-Many hospitals currently rely on manual registers or disconnected software systems. This makes it difficult to manage patient records, track patient history effectively, avoid scheduling conflicts, and streamline overall operations. This project aims to solve these issues by creating a single, integrated web application.
+## 🚀 Overview
 
-Core Features
-The system is built with three distinct user roles: Admin, Doctor, and Patient.
+This project is a web-based Hospital Management System developed using Python and Flask. It provides separate workflows for patients and doctors, allowing appointment booking, profile management, note handling, and appointment history tracking.
 
-1. Admin (Hospital Staff)
-The Admin is a pre-existing superuser; no registration is allowed for this role.
+The platform was designed with scalability and usability in mind, combining backend functionality with a simple and responsive user interface.
 
+---
 
+## ✨ Features
 
-Dashboard: View system statistics, including the total number of doctors, patients, and appointments.
+### 👨‍⚕️ Doctor Module
 
+* Doctor registration and authentication
+* Dashboard for managing appointments
+* Add medical notes for patients
+* View appointment history
+* Manage doctor profile
 
-Doctor Management: Add, update, and delete doctor profiles, including their name, specialization, and availability.
+### 🧑‍🤝‍🧑 Patient Module
 
+* Patient registration and login
+* Book and reschedule appointments
+* View appointment history
+* Access doctor notes and records
+* Profile management system
 
+### 🔐 Authentication & Security
 
-Patient Management: Can search for patients by name, ID, or contact information.
+* User authentication system
+* Session handling using Flask
+* Separate login flows for doctors and patients
 
+### 🎨 Frontend & UI
 
+* Responsive interface using HTML, CSS, and Flask templates
+* Clean dashboard layouts
+* User-friendly navigation and workflows
 
-Appointment Management: View and manage all appointments in the system (both upcoming and past).
+---
 
+## 🛠️ Tech Stack
 
+### Backend
 
-User Management: Can remove or "blacklist" doctors and patients from the system.
+* Python
+* Flask
+* SQLite
+* SQLAlchemy
+* WTForms
 
-2. Doctor
+### Frontend
 
-Dashboard: View assigned appointments for the day or week and see a list of assigned patients.
+* HTML5
+* CSS3
+* Jinja2 Templates
 
+---
 
+## 📂 Project Structure
 
+```bash
+hospital-management-website/
+│── app.py
+│── models.py
+│── forms.py
+│── extension.py
+│── run.py
+│── templates/
+│── static/
+│── instance/
+└── README.md
+```
 
-Availability: Can provide and update their availability for the next 7 days.
+---
 
+## ⚙️ Installation & Setup
 
-Appointment Workflow: Mark appointments as "Completed" or "Cancelled".
+### 1. Clone the Repository
 
+```bash
+git clone <repository-link>
+cd hospital-management-website
+```
 
+### 2. Create Virtual Environment
 
+```bash
+python -m venv venv
+```
 
-Treatment Records: Enter diagnosis, treatment notes, and prescriptions after a visit is completed.
+### 3. Activate Virtual Environment
 
+#### Windows
 
+```bash
+venv\Scripts\activate
+```
 
-Patient History: View the complete medical history (previous diagnoses, prescriptions) for their patients.
+#### Mac/Linux
 
+```bash
+source venv/bin/activate
+```
 
-3. Patient
+### 4. Install Dependencies
 
-Authentication: Can register for a new account, log in, and update their personal profile.
+```bash
+pip install -r requirements.txt
+```
 
+### 5. Run the Application
 
+```bash
+python run.py
+```
 
+---
 
-Doctor Search: Search for doctors by specialization or name and view their profiles and availability for the next 7 days.
+## 📸 Suggested Portfolio Highlights
 
+You can showcase this project in your portfolio using these focus points:
 
+* Full-stack healthcare management system
+* Multi-user authentication workflow
+* Appointment scheduling and management
+* Flask-based backend architecture
+* Database integration with SQLite
+* Responsive dashboard interface
 
+---
 
-Appointment Booking: Can book, reschedule, or cancel their own appointments based on doctor availability.
+## 📈 Learning Outcomes
 
+This project helped strengthen:
 
+* Backend development using Flask
+* Database design and ORM usage
+* Authentication and session management
+* Dynamic template rendering
+* Full-stack project structuring
 
-Dashboard: View all available specializations/departments.
+---
 
+## 🔮 Future Improvements
 
-Medical History: View their own upcoming appointments and status as well as their past appointment history with diagnosis and prescription details.
+* Email notifications for appointments
+* Video consultation integration
+* Payment gateway support
+* Admin dashboard
+* Prescription PDF generation
+* Cloud database deployment
 
+---
 
+## 👤 Author
 
+Adya Jha
 
-Key System Functionalities
+* Software Engineering Student
+* AI/ML and Full Stack Development Enthusiast
 
-Conflict Prevention: Prevents multiple appointments from being booked for the same doctor at the same date and time.
+Behance: [https://www.behance.net/adyajha](https://www.behance.net/adyajha)
+LinkedIn: [https://www.linkedin.com/in/adyajha2004/](https://www.linkedin.com/in/adyajha2004/)
 
+---
 
-Dynamic Status: Appointment statuses are updated dynamically (e.g., Booked, Completed, Cancelled).
+## 📄 License
 
-
-History Tracking: Stores all completed appointment records, including diagnosis, prescriptions, and notes, for every patient.
-
-Technology Stack
-This project is built using the following mandatory frameworks and technologies:
-
-
-Backend: Flask 
-
-
-Frontend: Jinja2 Templating, HTML, CSS 
-
-
-
-Styling: Bootstrap 
-
-
-
-Database: SQLite 
-
-
-Authentication (Recommended): Flask-Login / Flask-Security
+This project is for educational and portfolio purposes.
